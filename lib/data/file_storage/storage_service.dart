@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
@@ -58,15 +59,35 @@ class StorageService {
     }
   }
 
-  /// Удаляет несколько файлов.
   Future<void> deleteFiles({required Iterable<String> paths}) async {
     for (final path in paths) {
       await deleteFile(path: path);
     }
   }
 
-  /// Проверяет, существует ли файл.
   Future<bool> fileExists({required String path}) {
     return File(path).exists();
+  }
+
+  Future<String> exportText({
+    required String fileName,
+    required String text,
+  }) async {
+    final appDirectory = await getApplicationDocumentsDirectory();
+
+    final exportDirectory = Directory(p.join(appDirectory.path, 'exports'));
+
+    await exportDirectory.create(recursive: true);
+
+    // Убираем путь из имени файла и заменяем расширение на .txt.
+    final safeName = p
+        .basenameWithoutExtension(fileName)
+        .replaceAll(RegExp(r'[<>:"/\\|?*\x00-\x1F]'), '_');
+
+    final file = File(p.join(exportDirectory.path, '$safeName.txt'));
+
+    await file.writeAsString(text, encoding: utf8, flush: true);
+
+    return file.path;
   }
 }

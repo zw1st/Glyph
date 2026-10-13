@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:glyph/data/file_storage/storage_service.dart';
+import 'package:glyph/data/ml/ocr_service.dart';
 import 'package:logger/logger.dart';
 
 import '../../domain/models/page_model.dart';
@@ -17,16 +18,19 @@ class PageRepo implements PageRepoInterface {
     required PageDao pageDao,
     required StorageService storageService,
     required Logger logger,
+    required OcrService ocrService,
     DateTime Function()? clock,
   }) : _pageDao = pageDao,
        _storageService = storageService,
        _logger = logger,
+       _ocrService = ocrService,
        _clock = clock ?? DateTime.now;
 
   final PageDao _pageDao;
   final StorageService _storageService;
   final DateTime Function() _clock;
   final Logger _logger;
+  final OcrService _ocrService;
 
   @override
   Future<Result<PageModel>> createPage({
@@ -40,7 +44,7 @@ class PageRepo implements PageRepoInterface {
       final pageId = await _pageDao.createPage(
         docId: docId,
         imagePath: imagePath,
-        recognizedText: "", //TODO сделать сервис распознавания
+        recognizedText: await _ocrService.recognizeText(imagePath: imagePath),
         createdAt: _clock(),
       );
 

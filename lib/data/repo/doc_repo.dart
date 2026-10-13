@@ -1,3 +1,5 @@
+import 'package:glyph/data/file_storage/storage_service.dart';
+
 import '../../domain/models/doc_model.dart';
 import '../../domain/repo_interface/doc_repo_interface.dart';
 import '../../utils/result_pattern.dart';
@@ -5,26 +7,19 @@ import '../database/app_database.dart';
 import '../database/dao/doc_dao.dart';
 import '../database/dao/page_dao.dart';
 
-typedef DeleteFiles = Future<void> Function(List<String> paths);
-typedef ImportDocument = Future<void> Function(int docId);
-
 class DocRepo implements DocRepoInterface {
   DocRepo({
     required DocDao docDao,
     required PageDao pageDao,
-    required DeleteFiles deleteFiles,
-    required ImportDocument importDocument,
-    DateTime Function()? clock,
+    required StorageService storageService,
   }) : _docDao = docDao,
        _pageDao = pageDao,
-       _deleteFiles = deleteFiles,
-       _importDocument = importDocument,
-       _clock = clock ?? DateTime.now;
+       _storageService = storageService,
+       _clock = DateTime.now;
 
   final DocDao _docDao;
   final PageDao _pageDao;
-  final DeleteFiles _deleteFiles;
-  final ImportDocument _importDocument;
+  final StorageService _storageService;
   final DateTime Function() _clock;
 
   @override
@@ -89,18 +84,8 @@ class DocRepo implements DocRepoInterface {
       }
 
       // SQLite уже удалил документ и связанные строки страниц.
-      await _deleteFiles(paths);
+      await _storageService.deleteFiles(paths: paths);
 
-      return Result.ok(null);
-    } on Exception catch (e) {
-      return Result.error(e);
-    }
-  }
-
-  @override
-  Future<Result<void>> importDoc({required int docId}) async {
-    try {
-      await _importDocument(docId);
       return Result.ok(null);
     } on Exception catch (e) {
       return Result.error(e);

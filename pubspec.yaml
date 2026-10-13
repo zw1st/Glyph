@@ -15,6 +15,7 @@ dependencies:
   path: ^1.9.1
   logger: ^2.8.0
   get_it: ^9.3.0
+  google_mlkit_text_recognition: ^0.16.0
 
 
 dev_dependencies:
