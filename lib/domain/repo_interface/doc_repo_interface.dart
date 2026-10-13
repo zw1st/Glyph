@@ -12,5 +12,4 @@ abstract interface class DocRepoInterface {
     required String newName,
   });
   Future<Result<void>> deleteDoc({required int docId});
-  Future<Result<void>> importDoc({required int docId});
 }

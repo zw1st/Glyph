@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:glyph/utils/di.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await setupDependencyInjection();
+
   runApp(const MyApp());
 }
 

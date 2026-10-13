@@ -9,10 +9,21 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
+  drift: ^2.31.0
+  drift_flutter: ^0.2.8
+  path_provider: ^2.1.5
+  path: ^1.9.1
+  logger: ^2.8.0
+  get_it: ^9.3.0
+  google_mlkit_text_recognition: ^0.16.0
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  drift_dev: ^2.31.0
+  build_runner: ^2.15.1
 
 flutter:
   uses-material-design: true

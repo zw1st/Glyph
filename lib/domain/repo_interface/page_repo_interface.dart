@@ -1,9 +1,14 @@
+import 'dart:io';
+
 import 'package:glyph/domain/models/page_model.dart';
 
 import '../../utils/result_pattern.dart';
 
 abstract interface class PageRepoInterface {
-  Future<Result<PageModel>> createPage({required int docId});
+  Future<Result<PageModel>> createPage({
+    required int docId,
+    required File sourceFile,
+  });
   Future<Result<List<PageModel>>> readPages({
     required int docId,
     String? search,
@@ -16,7 +21,6 @@ abstract interface class PageRepoInterface {
   Future<Result<void>> deletePage({required int pageId});
   Future<Result<PageModel>> movePage({
     required int newPosition,
-    required int newDocId,
     required int pageId,
   });
 }
