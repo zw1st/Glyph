@@ -13,6 +13,7 @@ abstract interface class PageRepoInterface {
     required int docId,
     String? search,
   }); // поиск по словам в text
+  Future<Result<PageModel>> readPage({required int pageId});
   Future<Result<PageModel>> editText({
     required int pageId,
     required String newText,

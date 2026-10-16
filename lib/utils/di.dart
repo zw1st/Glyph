@@ -11,13 +11,12 @@ import '../data/file_storage/storage_service.dart';
 import '../data/ml/ml_kit_ocr_service.dart';
 import '../data/repo/page_repo.dart';
 import '../domain/repo_interface/page_repo_interface.dart';
+import '../presentation/screens/home_screen/cubit/home_cubit.dart';
 
 final locator = GetIt.instance;
 
 Future<void> setupDependencyInjection() async {
   locator.registerLazySingleton<Logger>(() => Logger());
-
-  locator.registerLazySingleton<OcrService>(() => MlKitOcrService());
 
   locator.registerLazySingleton<AppDatabase>(() => AppDatabase());
 
@@ -46,5 +45,9 @@ Future<void> setupDependencyInjection() async {
       pageDao: locator<PageDao>(),
       storageService: locator<StorageService>(),
     ),
+  );
+
+  locator.registerFactory<HomeCubit>(
+    () => HomeCubit(docRepo: locator<DocRepoInterface>()),
   );
 }

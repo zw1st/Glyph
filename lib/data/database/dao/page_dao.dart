@@ -28,7 +28,7 @@ class PageDao extends DatabaseAccessor<AppDatabase> with _$PageDaoMixin {
       return into(pages).insert(
         PagesCompanion.insert(
           docId: docId,
-          position: Value(nextPosition) as int,
+          position: nextPosition,
           imagePath: imagePath,
           recognizedText: recognizedText,
           editedText: recognizedText,
