@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:photo_view/photo_view.dart';
 
 import '../../../domain/models/page_model.dart';
 import 'cubit/page_cubit.dart';
@@ -180,16 +181,19 @@ class _PageScreenState extends State<PageScreen> {
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
-      child: Image.file(
-        file,
-        width: double.infinity,
-        fit: BoxFit.contain,
-        errorBuilder: (context, error, stackTrace) {
-          return const SizedBox(
-            height: 200,
-            child: Center(child: Text('Не удалось загрузить изображение')),
-          );
-        },
+      child: GestureDetector(
+        onTap: () => _showImageDialog(context, file),
+        child: Image.file(
+          file,
+          width: double.infinity,
+          fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) {
+            return const SizedBox(
+              height: 200,
+              child: Center(child: Text('Не удалось загрузить изображение')),
+            );
+          },
+        ),
       ),
     );
   }
@@ -222,6 +226,51 @@ class _PageScreenState extends State<PageScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showImageDialog(BuildContext context, File file) {
+    showDialog<void>(
+      context: context,
+      barrierColor: Colors.black87,
+      builder: (dialogContext) {
+        return Dialog.fullscreen(
+          backgroundColor: Colors.black,
+          child: Stack(
+            children: [
+              PhotoView(
+                imageProvider: FileImage(file),
+                minScale: PhotoViewComputedScale.contained,
+                maxScale: PhotoViewComputedScale.covered * 4,
+                backgroundDecoration: const BoxDecoration(color: Colors.black),
+                errorBuilder: (context, error, stackTrace) {
+                  return const Center(
+                    child: Text(
+                      'Не удалось загрузить изображение',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  );
+                },
+              ),
+              Positioned(
+                top: 16,
+                right: 16,
+                child: SafeArea(
+                  child: IconButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(),
+                    icon: const Icon(
+                      Icons.close,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                    tooltip: 'Закрыть',
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
