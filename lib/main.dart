@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:glyph/presentation/router/app_router.dart';
+import 'package:glyph/presentation/screens/home_screen/home_screen.dart';
+import 'package:glyph/presentation/widgets/card.dart';
+import 'package:glyph/presentation/widgets/search_bar.dart';
 import 'package:glyph/utils/di.dart';
 
 void main() async {
@@ -13,12 +17,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      routerConfig: appRouter,
     );
   }
 }
@@ -52,6 +57,14 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            SearchField(onChanged: (String value) {}),
+            ListItemCard(
+              title: "Test",
+              subtitle: 'Создан: ${DateTime.april}',
+              onTap: () {},
+              onRename: () {},
+              onDelete: () {},
+            ),
             const Text('You have pushed the button this many times:'),
             Text(
               '$_counter',

@@ -181,4 +181,18 @@ class PageRepo implements PageRepoInterface {
       createdAt: row.createdAt,
     );
   }
+
+  @override
+  Future<Result<PageModel>> readPage({required int pageId}) async {
+    try {
+      final row = await _pageDao.getPageById(pageId);
+      if (row == null) {
+        throw StateError('Created page was not found');
+      }
+
+      return Result.ok(_toModel(row));
+    } on Exception catch (e) {
+      return Result.error(e);
+    }
+  }
 }
