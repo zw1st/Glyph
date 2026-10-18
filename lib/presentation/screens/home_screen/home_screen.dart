@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/doc_model.dart';
-import '../../../utils/di.dart';
 import '../../widgets/card.dart';
 import '../../widgets/search_bar.dart';
 import 'cubit/home_cubit.dart';

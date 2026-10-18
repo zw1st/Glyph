@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:glyph/domain/models/page_model.dart';
 import 'package:glyph/domain/repo_interface/page_repo_interface.dart';
 
+import '../../../../domain/enum/ocr_engine.dart';
 import '../../../../utils/result_pattern.dart';
 import 'doc_state.dart';
 
@@ -31,10 +32,14 @@ class DocCubit extends Cubit<DocState> {
     await _fetchPages();
   }
 
-  Future<void> createPage(File sourceFile) async {
+  Future<void> createPage({
+    required File sourceFile,
+    required OcrEngine engine,
+  }) async {
     final page = await _pageRepo.createPage(
       docId: _docId,
       sourceFile: sourceFile,
+      engine: engine,
     );
 
     switch (page) {

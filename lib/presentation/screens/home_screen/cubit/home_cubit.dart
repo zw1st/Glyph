@@ -38,7 +38,7 @@ class HomeCubit extends Cubit<HomeState> {
     final result = await _docRepo.createDoc(name: normalizedName);
 
     switch (result) {
-      case Ok<DocModel>(:final value):
+      case Ok<DocModel>():
         await _fetchDocs();
       case Error<DocModel>(:final error):
         emit(HomeError(error.toString()));
