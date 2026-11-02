@@ -22,6 +22,7 @@ dependencies:
   image_picker: ^1.2.2
   photo_view: ^0.15.0
   tesseract_ocr: ^0.5.0
+  flutter_paddle_ocr: ^0.0.2
 
 
 dev_dependencies:

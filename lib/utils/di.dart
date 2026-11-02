@@ -38,6 +38,11 @@ Future<void> setupDependencyInjection() async {
     instanceName: 'tesseract',
   );
 
+  // locator.registerLazySingleton<OcrService>(
+  //   () => Paddl(),
+  //   instanceName: 'paddle',
+  // );
+
   locator.registerLazySingleton<OcrServiceFactory>(
     () => OcrServiceFactory(
       mlKit: locator<OcrService>(instanceName: 'mlKit'),
