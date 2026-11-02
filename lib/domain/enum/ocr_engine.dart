@@ -1,1 +1,1 @@
-enum OcrEngine { mlKit, tesseract }
+enum OcrEngine { mlKit, tesseract, paddle }

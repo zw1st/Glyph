@@ -1,8 +1,10 @@
 import 'package:get_it/get_it.dart';
 import 'package:glyph/data/database/app_database.dart';
 import 'package:glyph/data/ml/ocr_service.dart';
+import 'package:glyph/data/ml/paddle_ocr_service.dart';
 import 'package:glyph/data/repo/doc_repo.dart';
 import 'package:glyph/domain/repo_interface/doc_repo_interface.dart';
+import 'package:glyph/utils/paddle_file_loader.dart';
 import 'package:logger/logger.dart';
 
 import '../data/database/dao/doc_dao.dart';
@@ -38,15 +40,17 @@ Future<void> setupDependencyInjection() async {
     instanceName: 'tesseract',
   );
 
-  // locator.registerLazySingleton<OcrService>(
-  //   () => Paddl(),
-  //   instanceName: 'paddle',
-  // );
+  locator.registerLazySingleton<OcrService>(
+    () => PaddleOcrService(loadModels: PaddleModelFiles.prepare),
+    instanceName: 'paddle',
+    dispose: (s) => (s as PaddleOcrService).dispose(),
+  );
 
   locator.registerLazySingleton<OcrServiceFactory>(
     () => OcrServiceFactory(
       mlKit: locator<OcrService>(instanceName: 'mlKit'),
       tesseract: locator<OcrService>(instanceName: 'tesseract'),
+      paddle: locator<OcrService>(instanceName: 'paddle'),
     ),
   );
 

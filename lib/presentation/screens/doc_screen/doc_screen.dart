@@ -59,6 +59,10 @@ class _DocScreenState extends State<DocScreen> {
                           value: OcrEngine.tesseract,
                           label: Text('Tesseract'),
                         ),
+                        ButtonSegment<OcrEngine>(
+                          value: OcrEngine.paddle,
+                          label: Text('Paddle'),
+                        ),
                       ],
                       selected: {_selectedOcrEngine},
                       onSelectionChanged: (selection) {
