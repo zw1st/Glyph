@@ -3,13 +3,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../domain/enum/ocr_engine.dart';
 import '../../../domain/models/page_model.dart';
 import '../../widgets/card.dart';
 import '../../widgets/search_bar.dart';
 import 'cubit/doc_cubit.dart';
 import 'cubit/doc_state.dart';
 
-class DocScreen extends StatelessWidget {
+class DocScreen extends StatefulWidget {
   const DocScreen({
     required this.docId,
     required this.docName,
@@ -22,14 +23,58 @@ class DocScreen extends StatelessWidget {
   final ValueChanged<PageModel>? onEditPage;
 
   @override
+  State<DocScreen> createState() => _DocScreenState();
+}
+
+class _DocScreenState extends State<DocScreen> {
+  OcrEngine _selectedOcrEngine = OcrEngine.mlKit;
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(docName, maxLines: 1, overflow: TextOverflow.ellipsis),
+        title: Text(
+          widget.docName,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
       body: SafeArea(
         child: Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                children: [
+                  const Text('OCR:'),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: SegmentedButton<OcrEngine>(
+                      segments: const [
+                        ButtonSegment<OcrEngine>(
+                          value: OcrEngine.mlKit,
+                          label: Text('ML Kit'),
+                        ),
+                        ButtonSegment<OcrEngine>(
+                          value: OcrEngine.tesseract,
+                          label: Text('Tesseract'),
+                        ),
+                        ButtonSegment<OcrEngine>(
+                          value: OcrEngine.paddle,
+                          label: Text('Paddle'),
+                        ),
+                      ],
+                      selected: {_selectedOcrEngine},
+                      onSelectionChanged: (selection) {
+                        setState(() {
+                          _selectedOcrEngine = selection.first;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
               child: SearchField(
@@ -73,13 +118,13 @@ class DocScreen extends StatelessWidget {
                           title: 'Страница ${page.position + 1}',
                           subtitle: _pagePreview(page),
                           leading: _PageThumbnail(imagePath: page.imagePath),
-                          onTap: () => onEditPage?.call(page),
+                          onTap: () => widget.onEditPage?.call(page),
                           trailing: PopupMenuButton<_PageAction>(
                             tooltip: 'Действия со страницей',
                             onSelected: (action) {
                               switch (action) {
                                 case _PageAction.edit:
-                                  onEditPage?.call(page);
+                                  widget.onEditPage?.call(page);
 
                                 case _PageAction.resetText:
                                   _confirmResetText(context, page);
@@ -175,7 +220,10 @@ class DocScreen extends StatelessWidget {
 
       if (image == null || !context.mounted) return;
 
-      await context.read<DocCubit>().createPage(File(image.path));
+      await context.read<DocCubit>().createPage(
+        sourceFile: File(image.path),
+        engine: _selectedOcrEngine,
+      );
     } catch (error) {
       if (!context.mounted) return;
 

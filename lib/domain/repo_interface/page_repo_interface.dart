@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:glyph/domain/enum/ocr_engine.dart';
 import 'package:glyph/domain/models/page_model.dart';
 
 import '../../utils/result_pattern.dart';
@@ -8,6 +9,7 @@ abstract interface class PageRepoInterface {
   Future<Result<PageModel>> createPage({
     required int docId,
     required File sourceFile,
+    required OcrEngine engine,
   });
   Future<Result<List<PageModel>>> readPages({
     required int docId,

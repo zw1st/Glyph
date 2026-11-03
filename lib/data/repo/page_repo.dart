@@ -1,7 +1,8 @@
 import 'dart:io';
 
 import 'package:glyph/data/file_storage/storage_service.dart';
-import 'package:glyph/data/ml/ocr_service.dart';
+import 'package:glyph/data/ml/engine_factory.dart';
+import 'package:glyph/domain/enum/ocr_engine.dart';
 import 'package:logger/logger.dart';
 
 import '../../domain/models/page_model.dart';
@@ -18,33 +19,39 @@ class PageRepo implements PageRepoInterface {
     required PageDao pageDao,
     required StorageService storageService,
     required Logger logger,
-    required OcrService ocrService,
     DateTime Function()? clock,
+    required OcrServiceFactory ocrServiceFactory,
   }) : _pageDao = pageDao,
        _storageService = storageService,
        _logger = logger,
-       _ocrService = ocrService,
-       _clock = clock ?? DateTime.now;
+       _clock = clock ?? DateTime.now,
+       _ocrServiceFactory = ocrServiceFactory;
 
   final PageDao _pageDao;
   final StorageService _storageService;
   final DateTime Function() _clock;
   final Logger _logger;
-  final OcrService _ocrService;
+  final OcrServiceFactory _ocrServiceFactory;
 
   @override
   Future<Result<PageModel>> createPage({
     required int docId,
     required File sourceFile,
+    required OcrEngine engine,
   }) async {
     String? imagePath;
     try {
       imagePath = await _storageService.saveImage(source: sourceFile);
 
+      final ocrService = _ocrServiceFactory.get(engine);
+      final recognizedText = await ocrService.recognizeText(
+        imagePath: imagePath,
+      );
+
       final pageId = await _pageDao.createPage(
         docId: docId,
         imagePath: imagePath,
-        recognizedText: await _ocrService.recognizeText(imagePath: imagePath),
+        recognizedText: recognizedText,
         createdAt: _clock(),
       );
 

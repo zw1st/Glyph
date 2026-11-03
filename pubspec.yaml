@@ -22,6 +22,21 @@ dependencies:
   image_picker: ^1.2.2
   photo_view: ^0.15.0
 
+  flutter_tesseract_ocr: ^0.4.31
+#  tesseract_ocr: ^0.5.0
+
+  flutter_paddle_ocr_v5: ^0.0.3
+#  flutter_paddle_ocr: ^0.0.2
+#  flutter_paddle_ocr_v5:
+#    git:
+#      url: https://github.com/mywaspapp/flutter-paddle-ocr
+#      ref: main
+
+dependency_overrides:
+  flutter_tesseract_ocr:
+    path: packages/flutter_tesseract_ocr
+  flutter_paddle_ocr_v5:
+    path: packages/flutter_paddle_ocr_v5
 
 dev_dependencies:
   flutter_test:
@@ -32,7 +47,11 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  
+
+  assets:
+    - assets/tessdata_config.json
+    - assets/tessdata/
+    - assets/ocr/paddle/
   
   
   

@@ -1,14 +1,18 @@
 import 'package:get_it/get_it.dart';
 import 'package:glyph/data/database/app_database.dart';
 import 'package:glyph/data/ml/ocr_service.dart';
+import 'package:glyph/data/ml/paddle_ocr_service.dart';
 import 'package:glyph/data/repo/doc_repo.dart';
 import 'package:glyph/domain/repo_interface/doc_repo_interface.dart';
+import 'package:glyph/utils/paddle_file_loader.dart';
 import 'package:logger/logger.dart';
 
 import '../data/database/dao/doc_dao.dart';
 import '../data/database/dao/page_dao.dart';
 import '../data/file_storage/storage_service.dart';
+import '../data/ml/engine_factory.dart';
 import '../data/ml/ml_kit_ocr_service.dart';
+import '../data/ml/tesseract_ocr_service.dart';
 import '../data/repo/page_repo.dart';
 import '../domain/repo_interface/page_repo_interface.dart';
 import '../presentation/screens/home_screen/cubit/home_cubit.dart';
@@ -26,15 +30,35 @@ Future<void> setupDependencyInjection() async {
 
   locator.registerLazySingleton<StorageService>(() => StorageService());
 
-  locator.registerLazySingleton<MlKitOcrService>(() => MlKitOcrService());
+  locator.registerLazySingleton<OcrService>(
+    () => MlKitOcrService(),
+    instanceName: 'mlKit',
+  );
 
-  locator.registerLazySingleton<OcrService>(() => locator<MlKitOcrService>());
+  locator.registerLazySingleton<OcrService>(
+    () => TesseractOcrService(),
+    instanceName: 'tesseract',
+  );
+
+  locator.registerLazySingleton<OcrService>(
+    () => PaddleOcrService(loadModels: PaddleModelFiles.prepare),
+    instanceName: 'paddle',
+    dispose: (s) => (s as PaddleOcrService).dispose(),
+  );
+
+  locator.registerLazySingleton<OcrServiceFactory>(
+    () => OcrServiceFactory(
+      mlKit: locator<OcrService>(instanceName: 'mlKit'),
+      tesseract: locator<OcrService>(instanceName: 'tesseract'),
+      paddle: locator<OcrService>(instanceName: 'paddle'),
+    ),
+  );
 
   locator.registerLazySingleton<PageRepoInterface>(
     () => PageRepo(
       pageDao: locator<PageDao>(),
       storageService: locator<StorageService>(),
-      ocrService: locator<OcrService>(),
+      ocrServiceFactory: locator<OcrServiceFactory>(),
       logger: locator<Logger>(),
     ),
   );
